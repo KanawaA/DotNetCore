@@ -1,16 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using LearnDotNetCore.Context;
 using LearnDotNetCore.Model;
+using LearnDotNetCore.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers
 {
@@ -19,12 +27,19 @@ namespace API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly MyContext _context;
-        public UsersController(MyContext myContext)
+        SmtpClient client = new SmtpClient();
+        AttrEmail attrEmail = new AttrEmail();
+        RandomDigit randDig = new RandomDigit();
+        public IConfiguration _configuration;
+
+        public UsersController(MyContext myContext, IConfiguration configuration)
         {
             _context = myContext;
+            _configuration = configuration;
         }
 
         // GET api/values
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet]
         //public async Task<List<User>> GetAll()
         public List<UserVM> GetAll()
@@ -46,8 +61,6 @@ namespace API.Controllers
                 list.Add(user);
             }
             return list;
-            //return _context.Users.Include(r => r.roles);
-            //return await _context.Users.ToListAsync<User>();
         }
 
         [HttpGet("{id}")]
@@ -68,26 +81,50 @@ namespace API.Controllers
         [HttpPost]
         public IActionResult Create(UserVM userVM)
         {
-            userVM.RoleName = "Sales";
-            var user = new User();
-            var roleuser = new RoleUser();
-            var role = _context.Roles.Where(r => r.Name == userVM.RoleName).FirstOrDefault();
-            user.UserName = userVM.UserName;
-            user.Email = userVM.Email;
-            user.EmailConfirmed = false;
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userVM.Password);
-            user.PhoneNumber = userVM.Phone;
-            user.PhoneNumberConfirmed = false;
-            user.TwoFactorEnabled = false;
-            user.LockoutEnabled = false;
-            user.AccessFailedCount = 0;
-            roleuser.Role = role;
-            roleuser.User = user;
-            _context.RoleUsers.AddAsync(roleuser);
-            _context.Users.AddAsync(user);
-            _context.SaveChanges();
-            return Ok("Successfully Created");
-            //return data;
+            if (ModelState.IsValid)
+            {
+                client.Port = 587;
+                client.Host = "smtp.gmail.com";
+                client.EnableSsl = true;
+                client.Timeout = 10000;
+                client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                client.UseDefaultCredentials = false;
+                client.Credentials = new NetworkCredential(attrEmail.mail, attrEmail.pass);
+
+                var code = randDig.GenerateRandom();
+                var fill = "Hi " + userVM.UserName + "\n\n"
+                          + "Try this Password to get into reset password: \n"
+                          + code
+                          + "\n\nThank You";
+
+                MailMessage mm = new MailMessage("donotreply@domain.com", userVM.Email, "Create Email", fill);
+                mm.BodyEncoding = UTF8Encoding.UTF8;
+                mm.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
+                client.Send(mm);
+
+                userVM.RoleName = "Sales";
+                var user = new User();
+                var roleuser = new RoleUser();
+                var role = _context.Roles.Where(r => r.Name == userVM.RoleName).FirstOrDefault();
+                user.UserName = userVM.UserName;
+                user.Email = userVM.Email;
+                user.EmailConfirmed = false;
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userVM.Password);
+                user.PhoneNumber = userVM.Phone;
+                user.PhoneNumberConfirmed = false;
+                user.TwoFactorEnabled = false;
+                user.LockoutEnabled = false;
+                user.AccessFailedCount = 0;
+                user.SecurityStamp = code;
+                roleuser.Role = role;
+                roleuser.User = user;
+                _context.RoleUsers.AddAsync(roleuser);
+                _context.Users.AddAsync(user);
+                _context.SaveChanges();
+                return Ok("Successfully Created");
+                //return data;
+            }
+            return BadRequest("Register Failed");
         }
 
         [HttpPut("{id}")]
@@ -115,7 +152,7 @@ namespace API.Controllers
         public IActionResult Delete(string id)
         {
             var getIdr = _context.RoleUsers.Where(g => g.UserId == id).FirstOrDefault();
-            var getId = _context.Users.Find(id);  
+            var getId = _context.Users.Find(id);
             _context.Users.Remove(getId);
             _context.RoleUsers.Remove(getIdr);
             _context.SaveChanges();
@@ -143,14 +180,100 @@ namespace API.Controllers
                 }
                 else
                 {
-                    var user = new UserVM();
-                    user.Id = getUserRole.User.Id;
-                    user.UserName = getUserRole.User.UserName;
-                    user.Email = getUserRole.User.Email;
-                    user.Password = getUserRole.User.PasswordHash;
-                    user.Phone = getUserRole.User.PhoneNumber;
-                    user.RoleName = getUserRole.Role.Name;
-                    return StatusCode(200, user);
+                    //            var user = new UserVM();
+                    //            user.Id = getUserRole.User.Id;
+                    //            user.UserName = getUserRole.User.UserName;
+                    //            user.Email = getUserRole.User.Email;
+                    //            user.Password = getUserRole.User.PasswordHash;
+                    //            user.Phone = getUserRole.User.PhoneNumber;
+                    //            user.RoleName = getUserRole.Role.Name;
+                    //            user.VerifyCode = getUserRole.User.SecurityStamp;
+                    //            if (user != null)
+                    //            {
+                    //                var claims = new List<Claim>
+                    //                {
+                    //                    new Claim ("UserName", user.UserName),
+                    //                    new Claim("Email", user.Email)
+                    //                };
+
+                    //                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+
+                    //                var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                    //                var token = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], claims, expires: DateTime.UtcNow.AddSeconds(30), signingCredentials: signIn);
+
+                    //                return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+                    //            }
+                    if (getUserRole != null)
+                    {
+                        if (getUserRole.User.SecurityStamp != null)
+                        {
+                            var claims = new List<Claim> {
+                                new Claim("Id", getUserRole.User.Id),
+                                new Claim("Username", getUserRole.User.UserName),
+                                new Claim("Email", getUserRole.User.Email),
+                                new Claim("RoleName", getUserRole.Role.Name),
+                                new Claim("VerifyCode", getUserRole.User.SecurityStamp)
+                            };
+                            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                            var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                            var token = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], claims, expires: DateTime.UtcNow.AddDays(1), signingCredentials: signIn);
+                            return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+                        }
+                        else
+                        {
+                            var claims = new List<Claim> {
+                                new Claim("Id", getUserRole.User.Id),
+                                new Claim("Username", getUserRole.User.UserName),
+                                new Claim("Email", getUserRole.User.Email),
+                                new Claim("RoleName", getUserRole.Role.Name)
+                            };
+                            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                            var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                            var token = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], claims, expires: DateTime.UtcNow.AddDays(1), signingCredentials: signIn);
+                            return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+                        }
+                    }
+                    return BadRequest("Invalid credentials");
+                }
+            }
+            return BadRequest(500);
+        }
+
+        [HttpPost]
+        [Route("code")]
+        public IActionResult VerifyCode(UserVM userVM)
+        {
+            if (ModelState.IsValid)
+            {
+                var getUserRole = _context.RoleUsers.Include("User").Include("Role").SingleOrDefault(x => x.User.Email == userVM.Email);
+                if (getUserRole == null)
+                {
+                    return NotFound();
+                }
+                else if (userVM.VerifyCode != getUserRole.User.SecurityStamp)
+                {
+                    return BadRequest(new { msg = "Your Code is Wrong" });
+                }
+                else
+                {
+                    //var user = new UserVM();
+                    //user.Id = getUserRole.User.Id;
+                    //user.Username = getUserRole.User.UserName;
+                    //user.Email = getUserRole.User.Email;
+                    //user.Password = getUserRole.User.PasswordHash;
+                    //user.Phone = getUserRole.User.PhoneNumber;
+                    //user.RoleName = getUserRole.Role.Name;
+                    //return StatusCode(200, user);
+                    return StatusCode(200, new
+                    {
+                        Id = getUserRole.User.Id,
+                        Username = getUserRole.User.UserName,
+                        Email = getUserRole.User.Email,
+                        RoleName = getUserRole.Role.Name,
+                        //Email = getUserRole.User.Email,
+                        //Password = getUserRole.User.PasswordHash
+                    });
                 }
             }
             return BadRequest(500);

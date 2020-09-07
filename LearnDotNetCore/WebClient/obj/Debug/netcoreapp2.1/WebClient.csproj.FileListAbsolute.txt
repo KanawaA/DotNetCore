@@ -18,6 +18,7 @@ C:\1 File Kanawa\Bootcamp MII\Project\DotNetCore\LearnDotNetCore\WebClient\obj\D
 C:\1 File Kanawa\Bootcamp MII\Project\DotNetCore\LearnDotNetCore\WebClient\obj\Debug\netcoreapp2.1\WebClient.RazorCoreGenerate.cache
 C:\1 File Kanawa\Bootcamp MII\Project\DotNetCore\LearnDotNetCore\WebClient\obj\Debug\netcoreapp2.1\Razor\Views\Auth\Login.g.cshtml.cs
 C:\1 File Kanawa\Bootcamp MII\Project\DotNetCore\LearnDotNetCore\WebClient\obj\Debug\netcoreapp2.1\Razor\Views\Auth\Register.g.cshtml.cs
+C:\1 File Kanawa\Bootcamp MII\Project\DotNetCore\LearnDotNetCore\WebClient\obj\Debug\netcoreapp2.1\Razor\Views\Auth\Verify.g.cshtml.cs
 C:\1 File Kanawa\Bootcamp MII\Project\DotNetCore\LearnDotNetCore\WebClient\obj\Debug\netcoreapp2.1\Razor\Views\Dashboard\Index.g.cshtml.cs
 C:\1 File Kanawa\Bootcamp MII\Project\DotNetCore\LearnDotNetCore\WebClient\obj\Debug\netcoreapp2.1\Razor\Views\Home\About.g.cshtml.cs
 C:\1 File Kanawa\Bootcamp MII\Project\DotNetCore\LearnDotNetCore\WebClient\obj\Debug\netcoreapp2.1\Razor\Views\Home\Contact.g.cshtml.cs

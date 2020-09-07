@@ -14,6 +14,7 @@ namespace LearnDotNetCore.Model
         public string Password { get; set; }
         public string Phone { get; set; }
         public string RoleName { get; set; }
+        public string VerifyCode { get; set; }
 
         public UserVM(UserVM user)
         {

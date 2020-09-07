@@ -1,0 +1,32 @@
+﻿
+@{
+    ViewData["Title"] = "Verify";
+    Layout = "~/Views/Layout/_LayoutLogReg.cshtml";
+}
+
+<!-- Nested Row within Card Body -->
+<div class="row">
+    <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+    <div class="col-lg-6">
+        <div class="p-5">
+            <div class="text-center">
+                <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+            </div>
+            <div class="user">
+                <input type="text" id="Email" name="Email" class="form-control" hidden>
+                <div class="form-group">
+                    <input type="text" id="Code" class="form-control form-control-user" aria-describedby="emailHelp" placeholder="Enter Code">
+                </div>
+                <button class="btn btn-primary btn-user btn-block" onclick="Verify();">Login</button>
+            </div>
+            <hr>
+            <div class="text-center">
+                <a class="small" href="forgot-password.html">Forgot Password?</a>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/js/Script/AuthScript.js"></script>
+}
+
