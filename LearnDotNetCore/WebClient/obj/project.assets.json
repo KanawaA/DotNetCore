@@ -12698,11 +12698,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\1 File Kanawa\\Bootcamp MII\\Project\\DotNetCore\\LearnDotNetCore\\WebClient\\WebClient.csproj",
+      "projectUniqueName": "C:\\1 File Kanawa\\Bootcamp MII\\GitHub\\DotNetCore\\LearnDotNetCore\\WebClient\\WebClient.csproj",
       "projectName": "WebClient",
-      "projectPath": "C:\\1 File Kanawa\\Bootcamp MII\\Project\\DotNetCore\\LearnDotNetCore\\WebClient\\WebClient.csproj",
+      "projectPath": "C:\\1 File Kanawa\\Bootcamp MII\\GitHub\\DotNetCore\\LearnDotNetCore\\WebClient\\WebClient.csproj",
       "packagesPath": "C:\\Users\\kanaw\\.nuget\\packages\\",
-      "outputPath": "C:\\1 File Kanawa\\Bootcamp MII\\Project\\DotNetCore\\LearnDotNetCore\\WebClient\\obj\\",
+      "outputPath": "C:\\1 File Kanawa\\Bootcamp MII\\GitHub\\DotNetCore\\LearnDotNetCore\\WebClient\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -12721,8 +12721,8 @@
       "frameworks": {
         "netcoreapp2.1": {
           "projectReferences": {
-            "C:\\1 File Kanawa\\Bootcamp MII\\Project\\DotNetCore\\LearnDotNetCore\\LearnDotNetCore\\LearnDotNetCore.csproj": {
-              "projectPath": "C:\\1 File Kanawa\\Bootcamp MII\\Project\\DotNetCore\\LearnDotNetCore\\LearnDotNetCore\\LearnDotNetCore.csproj"
+            "C:\\1 File Kanawa\\Bootcamp MII\\GitHub\\DotNetCore\\LearnDotNetCore\\LearnDotNetCore\\LearnDotNetCore.csproj": {
+              "projectPath": "C:\\1 File Kanawa\\Bootcamp MII\\GitHub\\DotNetCore\\LearnDotNetCore\\LearnDotNetCore\\LearnDotNetCore.csproj"
             }
           }
         }
