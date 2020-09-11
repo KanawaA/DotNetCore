@@ -1,12 +1,8 @@
 ﻿
-@{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Layout/_Layout.cshtml";
-}
-
+@{ ViewData["Title"] = "Index";
+    Layout = "~/Views/Layout/_Layout.cshtml"; }
 <!-- Content Row -->
 <div class="row">
-
     <!-- Earnings (Monthly) Card Example -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-primary shadow h-100 py-2">
@@ -23,7 +19,6 @@
             </div>
         </div>
     </div>
-
     <!-- Earnings (Monthly) Card Example -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-success shadow h-100 py-2">
@@ -40,7 +35,6 @@
             </div>
         </div>
     </div>
-
     <!-- Earnings (Monthly) Card Example -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-info shadow h-100 py-2">
@@ -66,7 +60,6 @@
             </div>
         </div>
     </div>
-
     <!-- Pending Requests Card Example -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-warning shadow h-100 py-2">
@@ -84,5 +77,40 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <!-- Donut Chart -->
+    <div class="col-lg-6">
+        <div class="card ">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header ">
+                <h6 class="m-0 font-weight-bold text-primary">Donut Chart</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="col-md-12">
+                    <div class="amChart" id="pieChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Donut Chart -->
+    <div class="col-lg-6">
+        <div class="card ">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header ">
+                <h6 class="m-0 font-weight-bold text-primary">Bar Chart</h6>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="col-md-12">
+                    <div class="amChart" id="barChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+</div>
 
+@section Scripts{
+    <script src="~/js/Script/Dashboard.js"></script>
+}

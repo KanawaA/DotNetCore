@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "~/Views/Layout/_Layout.cshtml";
+}
+<div class="row align-self-center">
+    <div class="col-md-12">
+        <div class="card card-profile card-secondary">
+            <div class="card-body">
+                <div class="user-profile text-center">
+                    <div class="align-items-center">
+                        <div class="avatar avatar-xl">
+                            <img src="~/images/Admin.JPG" alt="..." class="avatar-img rounded" style="width:25%;height:25%;"  />
+                        </div>
+                    </div>
+                    <div class="name">@Context.Session.GetString("uname")</div>
+                    <div class="job">@Context.Session.GetString("email")</div>
+                    <div class="desc">@Context.Session.GetString("lvl")</div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row user-stats text-center">
+                    <div class="col">
+                        <div class="number">125</div>
+                        <div class="title">Post</div>
+                    </div>
+                    <div class="col">
+                        <div class="number">25K</div>
+                        <div class="title">Followers</div>
+                    </div>
+                    <div class="col">
+                        <div class="number">134</div>
+                        <div class="title">Following</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -9,7 +9,9 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using LearnDotNetCore.Context;
+using LearnDotNetCore.Migrations;
 using LearnDotNetCore.Model;
+using LearnDotNetCore.Models;
 using LearnDotNetCore.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -32,10 +34,11 @@ namespace API.Controllers
         RandomDigit randDig = new RandomDigit();
         public IConfiguration _configuration;
 
-        public UsersController(MyContext myContext, IConfiguration configuration)
+        public UsersController(MyContext myContext, IConfiguration configuration, IConfiguration config)
         {
             _context = myContext;
             _configuration = configuration;
+            _configuration = config;
         }
 
         // GET api/values
@@ -102,27 +105,35 @@ namespace API.Controllers
                 mm.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
                 client.Send(mm);
 
-                userVM.RoleName = "Sales";
-                var user = new User();
-                var roleuser = new RoleUser();
-                var role = _context.Roles.Where(r => r.Name == userVM.RoleName).FirstOrDefault();
-                user.UserName = userVM.UserName;
-                user.Email = userVM.Email;
-                user.EmailConfirmed = false;
-                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userVM.Password);
-                user.PhoneNumber = userVM.Phone;
-                user.PhoneNumberConfirmed = false;
-                user.TwoFactorEnabled = false;
-                user.LockoutEnabled = false;
-                user.AccessFailedCount = 0;
-                user.SecurityStamp = code;
-                roleuser.Role = role;
-                roleuser.User = user;
-                _context.RoleUsers.AddAsync(roleuser);
-                _context.Users.AddAsync(user);
+                var user = new User
+                {
+                    UserName = userVM.UserName,
+                    Email = userVM.Email,
+                    SecurityStamp = code,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(userVM.Password),
+                    PhoneNumber = userVM.Phone,
+                    EmailConfirmed = false,
+                    PhoneNumberConfirmed = false,
+                    TwoFactorEnabled = false,
+                    LockoutEnabled = false,
+                    AccessFailedCount = 0
+                };
+                _context.Users.Add(user);
+                var uRole = new RoleUser
+                {
+                    UserId = user.Id,
+                    RoleId = "2"
+                };
+                _context.RoleUsers.Add(uRole);
+                var emp = new Employee
+                {
+                    EmpId = user.Id,
+                    CreateTime = DateTimeOffset.Now,
+                    IsDelete = false
+                };
+                _context.Employees.Add(emp);
                 _context.SaveChanges();
                 return Ok("Successfully Created");
-                //return data;
             }
             return BadRequest("Register Failed");
         }
@@ -180,30 +191,30 @@ namespace API.Controllers
                 }
                 else
                 {
-                    //            var user = new UserVM();
-                    //            user.Id = getUserRole.User.Id;
-                    //            user.UserName = getUserRole.User.UserName;
-                    //            user.Email = getUserRole.User.Email;
-                    //            user.Password = getUserRole.User.PasswordHash;
-                    //            user.Phone = getUserRole.User.PhoneNumber;
-                    //            user.RoleName = getUserRole.Role.Name;
-                    //            user.VerifyCode = getUserRole.User.SecurityStamp;
-                    //            if (user != null)
-                    //            {
-                    //                var claims = new List<Claim>
+                    //var user = new UserVM();
+                    //user.Id = getUserRole.User.Id;
+                    //user.UserName = getUserRole.User.UserName;
+                    //user.Email = getUserRole.User.Email;
+                    //user.Password = getUserRole.User.PasswordHash;
+                    //user.Phone = getUserRole.User.PhoneNumber;
+                    //user.RoleName = getUserRole.Role.Name;
+                    //user.VerifyCode = getUserRole.User.SecurityStamp;
+                    //if (user != null)
+                    //{
+                    //    var claims = new List<Claim>
                     //                {
                     //                    new Claim ("UserName", user.UserName),
                     //                    new Claim("Email", user.Email)
                     //                };
 
-                    //                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                    //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
-                    //                var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                    //    var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                    //                var token = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], claims, expires: DateTime.UtcNow.AddSeconds(30), signingCredentials: signIn);
+                    //    var token = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], claims, expires: DateTime.UtcNow.AddSeconds(30), signingCredentials: signIn);
 
-                    //                return Ok(new JwtSecurityTokenHandler().WriteToken(token));
-                    //            }
+                    //    return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+                    //}
                     if (getUserRole != null)
                     {
                         if (getUserRole.User.SecurityStamp != null)
@@ -218,6 +229,7 @@ namespace API.Controllers
                             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
                             var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
                             var token = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], claims, expires: DateTime.UtcNow.AddDays(1), signingCredentials: signIn);
+                            //var token = new JwtSecurityToken(_configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], claims, expires: DateTime.UtcNow.AddDays(1), signingCredentials: signIn);
                             return Ok(new JwtSecurityTokenHandler().WriteToken(token));
                         }
                         else
@@ -267,7 +279,6 @@ namespace API.Controllers
                     //return StatusCode(200, user);
                     return StatusCode(200, new
                     {
-                        Id = getUserRole.User.Id,
                         Username = getUserRole.User.UserName,
                         Email = getUserRole.User.Email,
                         RoleName = getUserRole.Role.Name,

@@ -27,7 +27,7 @@ namespace WebClient
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
+                options.CheckConsentNeeded = context => false;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
@@ -45,8 +45,9 @@ namespace WebClient
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
+                app.UseStatusCodePagesWithRedirects("/notfound");
+                //app.UseExceptionHandler("/notfound");
+                //app.UseHsts(); terpakai
             }
 
             app.UseHttpsRedirection();

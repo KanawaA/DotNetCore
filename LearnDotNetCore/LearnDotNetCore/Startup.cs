@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LearnDotNetCore.Context;
+using LearnDotNetCore.Repositories.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,6 +33,9 @@ namespace LearnDotNetCore
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<MyContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyConnection")));
+
+            services.AddScoped<DeparmentRepo>();
+            services.AddScoped<DivisionRepo>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
             {
@@ -62,6 +66,7 @@ namespace LearnDotNetCore
                 app.UseHsts();
             }
 
+            app.UseAuthentication();            //terbaru
             app.UseHttpsRedirection();
             app.UseMvc();
         }
